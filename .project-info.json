@@ -1,0 +1,20 @@
+{
+  "name": "bike-care",
+  "title": "Bike Care",
+  "description": "Registro da manutenção de bicicletas por componente e quilometragem.",
+  "primary_language": "Kotlin",
+  "proposed_technologies": "Kotlin, Jetpack Compose e Room",
+  "status": "initial-core",
+  "github_created": false,
+  "application_implemented": true,
+  "planned_features": [
+    "Cadastrar bicicleta e componentes",
+    "Registrar quilometragem e manutenção",
+    "Listar serviços previstos"
+  ],
+  "implemented_technologies": [
+    "Kotlin",
+    "Biblioteca padrão"
+  ],
+  "validation": "Consulte GitHub Actions"
+}
