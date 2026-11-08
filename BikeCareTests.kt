@@ -10,9 +10,9 @@ private fun sample(): BikeState =
     BikeCare.addComponent(
         BikeCare.addComponent(
             BikeCare.create("mtb-29", "MTB Aro 29", 1200),
-            "Corrente", 1000, 300, 150
+            "Corrente", 1000, 0, 150
         ),
-        "Freios", 500, 1000, 100
+        "Freios", 500, 800, 100
     )
 
 fun main() {
@@ -44,7 +44,7 @@ fun main() {
         "sort overdue before upcoming" to {
             val items = BikeCare.forecast(sample())
             assertEquals("Corrente", items[0].name)
-            assertEquals(-100L, items[0].remainingKm)
+            assertEquals(-200L, items[0].remainingKm)
             assertEquals(DueStatus.OVERDUE, items[0].status)
             assertEquals(DueStatus.DUE_SOON, items[1].status)
         },
