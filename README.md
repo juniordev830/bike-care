@@ -54,3 +54,7 @@ O GitHub Actions compila e executa a interface original e os 26 cenários da bib
 ## Limitações
 
 A biblioteca ainda não tem interface gráfica, sincronização em nuvem, banco de dados ou recomendações automáticas de peças. As distâncias e intervalos são fornecidos pelo usuário. O TSV é um formato local simples, sem criptografia; não armazene dados confidenciais nele.
+
+## Quilometragem por mês e histórico confiável
+
+A biblioteca passou a oferecer `BikeCare.monthlyMileage(state)`, que retorna um mapa ordenado de `AAAA-MM → quilômetros` com **apenas os pedais registrados** (não inclui o odômetro acumulado antes de usar o aplicativo). O resumo textual também mostra os totais mensais. Na importação de TSV, as datas dos pedais precisam estar em ordem cronológica, evitando relatórios inconsistentes. Os testes cobrem múltiplos meses, totais e rejeição de histórico adulterado.
