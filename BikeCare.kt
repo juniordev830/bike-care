@@ -53,9 +53,14 @@ object BikeCare {
             Math.addExact(it.lastServiceKm, it.intervalKm)
         }
         var lastOdometer = 0L
+        var lastRideDate: String? = null
         var totalRidden = 0L
         state.rides.forEach {
             checkDate(it.date)
+            require(lastRideDate?.let { previous -> it.date >= previous } ?: true) {
+                "Histórico de pedais com datas fora de ordem"
+            }
+            lastRideDate = it.date
             require(it.distanceKm in 1..1000) { "Distância inválida" }
             require(it.odometerKm in 0..state.odometerKm && it.odometerKm > lastOdometer) {
                 "Histórico de pedais fora de ordem"
@@ -157,6 +162,17 @@ object BikeCare {
         )
     }
 
+    /** Monthly distance chart data, including only recorded rides (not imported odometer). */
+    fun monthlyMileage(state: BikeState): Map<String, Long> {
+        validate(state)
+        val totals = sortedMapOf<String, Long>()
+        for (ride in state.rides) {
+            val month = ride.date.substring(0, 7)
+            totals[month] = Math.addExact(totals[month] ?: 0L, ride.distanceKm)
+        }
+        return totals
+    }
+
     fun stats(state: BikeState): BikeStats {
         validate(state)
         val distance = state.rides.fold(0L) { total, ride -> Math.addExact(total, ride.distanceKm) }
@@ -226,6 +242,9 @@ object BikeCare {
         )
         forecast(state).forEach {
             lines += "${it.name}: ${it.status} | previsto=${it.dueKm} km | saldo=${it.remainingKm} km"
+        }
+        monthlyMileage(state).forEach { (month, distance) ->
+            lines += "Pedais em $month: $distance km"
         }
         return lines.joinToString("\n", postfix = "\n")
     }
