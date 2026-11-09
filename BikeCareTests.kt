@@ -141,6 +141,28 @@ fun main() {
                 )
             }
         },
+        "monthly mileage groups rides across calendar months" to {
+            var bike = BikeCare.create("x", "Bike", 0)
+            bike = BikeCare.recordRide(bike, "2026-10-31", 40)
+            bike = BikeCare.recordRide(bike, "2026-11-01", 50)
+            bike = BikeCare.recordRide(bike, "2026-11-05", 10)
+            val monthly = BikeCare.monthlyMileage(bike)
+            assertEquals(listOf("2026-10", "2026-11"), monthly.keys.toList())
+            assertEquals(40L, monthly["2026-10"])
+            assertEquals(60L, monthly["2026-11"])
+            check(BikeCare.summary(bike).contains("Pedais em 2026-11: 60 km"))
+            assertEquals(100L, bike.odometerKm)
+        },
+        "imported ride history rejects dates out of order" to {
+            var bike = BikeCare.create("x", "Bike", 0)
+            bike = BikeCare.recordRide(bike, "2026-10-31", 40)
+            bike = BikeCare.recordRide(bike, "2026-11-01", 50)
+            val corrupted = BikeCare.toTsv(bike).replace(
+                "RIDE\t2026-11-01\t50\t90", "RIDE\t2026-09-01\t50\t90"
+            )
+            fails { BikeCare.fromTsv(corrupted) }
+            assertEquals("2026-11-01", bike.rides.last().date)
+        },
         "summary is readable" to {
             val text = BikeCare.summary(sample())
             check(text.contains("MTB Aro 29"))
