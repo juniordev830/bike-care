@@ -141,6 +141,23 @@ fun main() {
                 )
             }
         },
+        "reject imported odometer jumps inconsistent with ride distance" to {
+            val corrupted = "BIKECARE\\t1\\nBIKE\\tx\\tBike\\t100\\n" +
+                "RIDE\\t2026-11-08\\t40\\t40\\n" +
+                "RIDE\\t2026-11-09\\t50\\t100\\n"
+            fails { BikeCare.fromTsv(corrupted) }
+        },
+        "reject imported first ride larger than its odometer" to {
+            val corrupted = "BIKECARE\\t1\\nBIKE\\tx\\tBike\\t100\\n" +
+                "RIDE\\t2026-11-08\\t50\\t20\\n"
+            fails { BikeCare.fromTsv(corrupted) }
+        },
+        "accept first ride with previously accumulated mileage" to {
+            val bike = BikeCare.recordRide(
+                BikeCare.create("x", "Bike", 1200), "2026-11-08", 80
+            )
+            assertEquals(bike, BikeCare.fromTsv(BikeCare.toTsv(bike)))
+        },
         "monthly mileage groups rides across calendar months" to {
             var bike = BikeCare.create("x", "Bike", 0)
             bike = BikeCare.recordRide(bike, "2026-10-31", 40)
