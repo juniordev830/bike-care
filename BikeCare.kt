@@ -55,18 +55,24 @@ object BikeCare {
         var lastOdometer = 0L
         var lastRideDate: String? = null
         var totalRidden = 0L
-        state.rides.forEach {
-            checkDate(it.date)
-            require(lastRideDate?.let { previous -> it.date >= previous } ?: true) {
+        state.rides.forEachIndexed { index, ride ->
+            checkDate(ride.date)
+            require(lastRideDate?.let { previous -> ride.date >= previous } ?: true) {
                 "Histórico de pedais com datas fora de ordem"
             }
-            lastRideDate = it.date
-            require(it.distanceKm in 1..1000) { "Distância inválida" }
-            require(it.odometerKm in 0..state.odometerKm && it.odometerKm > lastOdometer) {
+            lastRideDate = ride.date
+            require(ride.distanceKm in 1..1000) { "Distância inválida" }
+            require(ride.odometerKm in 0..state.odometerKm && ride.odometerKm > lastOdometer) {
                 "Histórico de pedais fora de ordem"
             }
-            lastOdometer = it.odometerKm
-            totalRidden = Math.addExact(totalRidden, it.distanceKm)
+            // The initial odometer may include distance before tracking began.
+            // After the first entry, each snapshot must advance by exactly its ride distance.
+            require(
+                if (index == 0) ride.odometerKm >= ride.distanceKm
+                else ride.odometerKm - lastOdometer == ride.distanceKm
+            ) { "Odômetro inconsistente com distância do pedal" }
+            lastOdometer = ride.odometerKm
+            totalRidden = Math.addExact(totalRidden, ride.distanceKm)
         }
         require(totalRidden <= state.odometerKm) { "Pedais excedem odômetro" }
         state.services.forEach {
