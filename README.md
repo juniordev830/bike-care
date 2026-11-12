@@ -58,3 +58,7 @@ A biblioteca ainda não tem interface gráfica, sincronização em nuvem, banco 
 ## Quilometragem por mês e histórico confiável
 
 A biblioteca passou a oferecer `BikeCare.monthlyMileage(state)`, que retorna um mapa ordenado de `AAAA-MM → quilômetros` com **apenas os pedais registrados** (não inclui o odômetro acumulado antes de usar o aplicativo). O resumo textual também mostra os totais mensais. Na importação de TSV, as datas dos pedais precisam estar em ordem cronológica, evitando relatórios inconsistentes. Os testes cobrem múltiplos meses, totais e rejeição de histórico adulterado.
+
+## Roteiro de qualidade
+
+Consulte o [guia de validação e manutenção](docs/GUIA_DE_VALIDACAO.md) para reproduzir testes, entender as limitações e revisar mudanças com segurança.
