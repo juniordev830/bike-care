@@ -62,3 +62,5 @@ A biblioteca passou a oferecer `BikeCare.monthlyMileage(state)`, que retorna um 
 ## Roteiro de qualidade
 
 Consulte o [guia de validação e manutenção](docs/GUIA_DE_VALIDACAO.md) para reproduzir testes, entender as limitações e revisar mudanças com segurança.
+
+A importação de snapshots TSV agora é limitada a 1 MB em bytes UTF-8 e rejeita linhas em branco dentro do arquivo. O encerramento normal com uma quebra de linha permanece válido. Assim, registros adulterados ou excessivamente grandes não passam silenciosamente pela restauração do histórico de manutenção.
