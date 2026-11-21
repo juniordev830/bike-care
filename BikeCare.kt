@@ -206,7 +206,12 @@ object BikeCare {
     }
 
     fun fromTsv(contents: String): BikeState {
-        val lines = contents.lines().filter { it.isNotEmpty() }
+        require(contents.toByteArray(Charsets.UTF_8).size <= 1_000_000) {
+            "Snapshot TSV excede 1 MB"
+        }
+        val rawLines = contents.lines()
+        val lines = if (rawLines.lastOrNull() == "") rawLines.dropLast(1) else rawLines
+        require(lines.none { it.isEmpty() }) { "Snapshot contém linha vazia inesperada" }
         require(lines.firstOrNull() == "BIKECARE\t1") { "Versão TSV inválida" }
         require(lines.size >= 2) { "Bicicleta ausente" }
         val bike = parseRow(lines[1], "BIKE", 4)

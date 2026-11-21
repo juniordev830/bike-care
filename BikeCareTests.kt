@@ -125,6 +125,18 @@ fun main() {
             bike = BikeCare.recordService(bike, "2026-11-08", "Corrente")
             assertEquals(bike, BikeCare.fromTsv(BikeCare.toTsv(bike)))
         },
+        "TSV rejects oversized maintenance snapshot" to {
+            val large = "BIKECARE\\t1\\nBIKE\\tx\\tBike\\t0\\n" + " ".repeat(1_000_001)
+            fails { BikeCare.fromTsv(large) }
+            check(BikeCare.fromTsv(BikeCare.toTsv(sample())).id == "mtb-29")
+        },
+        "TSV rejects blank rows hidden between records" to {
+            val good = BikeCare.toTsv(sample())
+            val corrupt = good.replace("BIKE\t", "\nBIKE\t")
+            fails { BikeCare.fromTsv(corrupt) }
+            fails { BikeCare.fromTsv(good + "\n") }
+            assertEquals(sample(), BikeCare.fromTsv(good))
+        },
         "TSV rejects unknown version" to {
             fails { BikeCare.fromTsv("BIKECARE\t99\n") }
         },
