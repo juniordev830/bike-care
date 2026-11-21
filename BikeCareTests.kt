@@ -125,6 +125,11 @@ fun main() {
             bike = BikeCare.recordService(bike, "2026-11-08", "Corrente")
             assertEquals(bike, BikeCare.fromTsv(BikeCare.toTsv(bike)))
         },
+        "TSV rejects oversized maintenance snapshot" to {
+            val large = "BIKECARE\\t1\\nBIKE\\tx\\tBike\\t0\\n" + " ".repeat(1_000_001)
+            fails { BikeCare.fromTsv(large) }
+            check(BikeCare.fromTsv(BikeCare.toTsv(sample())).id == "mtb-29")
+        },
         "TSV rejects unknown version" to {
             fails { BikeCare.fromTsv("BIKECARE\t99\n") }
         },
