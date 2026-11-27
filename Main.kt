@@ -21,7 +21,11 @@ fun main(args: Array<String>) {
             println("3 cenários OK"); return
         }
         require(args.size == 2) { "Uso: java -jar app.jar KM_ATUAL componentes.tsv" }
-        val lines = File(args[1]).readLines().filter { it.isNotBlank() }
+        val lines = File(args[1]).bufferedReader().use { reader ->
+            reader.lineSequence().mapIndexed { index, line ->
+                if (index == 0) line.removePrefix("\uFEFF") else line
+            }.filter { it.isNotBlank() }.toList()
+        }
         require(lines.firstOrNull() == "componente\tultima_km\tintervalo_km") { "Cabeçalho TSV inválido" }
         val components = lines.drop(1).map { row ->
             val cells = row.split('\t'); require(cells.size == 3) { "Esperadas 3 colunas" }
